@@ -1,24 +1,64 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
+using System.Web.Helpers;
 using System.Web.Http;
+using WebApiyleApi.Classes;
+using WebApiyleApi.Models;
+using WebApiyleApi.Services;
 
 namespace WebApiyleApi.Controllers
 {
+    [RoutePrefix("api/values")]
     public class ValuesController : ApiController
     {
-        // GET api/values
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        u_service _uservice;
+        b_service _bservice;
 
-        // GET api/values/5
-        public string Get(int id)
+        public ValuesController() {
+            _uservice = new u_service();
+            _bservice = new b_service();
+        }
+        [HttpGet]
+        [Route("getusers")]
+        // GET api/values
+        public JObject Get()
         {
-            return "value";
+            var Usermodel = new
+            {
+                User = _uservice.GetList()
+            };
+            var Resultmodel = new
+            {
+                Results = Usermodel
+            };
+            var Rootmodel = new {
+                RootObjects = Resultmodel
+            };
+            JObject obj = JObject.FromObject(Rootmodel);
+            return obj;
+        }
+        [HttpGet]
+        [Route("getuser/{id}")]
+        // GET api/values/5
+        public JObject Get(int id)
+        {
+            var Usermodel = new
+            {
+                User = _uservice.GetWithWhere(p => p.Id == id)
+            };
+            var Resultmodel = new
+            {
+                Results = Usermodel
+            };
+            var Rootmodel = new
+            {
+                RootObjects = Resultmodel
+            };
+            JObject obj = JObject.FromObject(Rootmodel);
+            return obj;
         }
 
         // POST api/values
