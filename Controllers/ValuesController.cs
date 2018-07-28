@@ -60,20 +60,59 @@ namespace WebApiyleApi.Controllers
             JObject obj = JObject.FromObject(Rootmodel);
             return obj;
         }
-
+        [HttpPost]
+        [Route("adduser")]
         // POST api/values
-        public void Post([FromBody]string value)
+        public IHttpActionResult Post(JObject request)
         {
+            User user = new User();
+            RootObjects jsonobject = JsonConvert.DeserializeObject<RootObjects>(request.ToString());
+            foreach (KeyValuePair<string, User> kvp in jsonobject.Result.User)
+            {
+                user.Name = kvp.Value.Name;
+                user.Location = kvp.Value.Location;
+            }
+            return Ok(_uservice.InsertEntity(user));
         }
-
+        [HttpPut]
+        [Route("updateuser/{id}")]
         // PUT api/values/5
-        public void Put(int id, [FromBody]string value)
+        public IHttpActionResult Put(int id, JObject request)
         {
+            User user = new User();
+            RootObjects jsonobject = JsonConvert.DeserializeObject<RootObjects>(request.ToString());
+            foreach (KeyValuePair<string, User> kvp in jsonobject.Result.User)
+            {
+                user.Id = id;
+                user.Location = kvp.Value.Location;
+                user.Name = kvp.Value.Name;
+            }
+            var response = _uservice.UpdateEntity(user);
+            if (response)
+            {
+                return Ok("Tamamdır"); //burada isterseniz json nesne döndürebilirsiniz :)
+            }
+            else
+            {
+                return NotFound(); //burada isterseniz json nesne döndürebilirsiniz :)
+            }
         }
-
+        [HttpDelete]
+        [Route("deleteuser/{id}")]
         // DELETE api/values/5
-        public void Delete(int id)
+        public IHttpActionResult Delete(int id)
         {
+            User u = new User();
+            u.Id = id;
+            var response = _uservice.DeleteEntity(u);
+            if (response)
+            {
+                return Ok("Tamamdır"); //burada isterseniz json nesne döndürebilirsiniz :)
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }

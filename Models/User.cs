@@ -8,7 +8,7 @@ namespace WebApiyleApi.Models
     {
         [JsonProperty("name")]
         public string Name { get; set; }
-        [JsonProperty("localtion")]
+        [JsonProperty("location")]
         public string Location { get; set; }
     }
 }
